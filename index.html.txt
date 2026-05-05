@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fix-It App</title>
+    <style>
+        :root {
+            --primary-blue: #5dade2;
+            --bg-gray: #f4f7f8;
+            --text-dark: #2c3e50;
+            --shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #d1d5db;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        /* حاوية الموبايل */
+        .phone-container {
+            width: 375px;
+            background-color: var(--bg-gray);
+            height: 812px;
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* الهيدر العلوي */
+        header {
+            background-color: var(--primary-blue);
+            color: white;
+            padding: 40px 20px 20px;
+            text-align: center;
+            border-bottom-left-radius: 25px;
+            border-bottom-right-radius: 25px;
+            position: relative;
+        }
+
+        .header-title { font-size: 24px; font-weight: bold; margin: 0; }
+        .back-btn { position: absolute; left: 20px; top: 45px; cursor: pointer; font-size: 20px; }
+
+        /* المحتوى الرئيسي */
+        .content {
+            padding: 20px;
+            flex: 1;
+            overflow-y: auto;
+            display: none; /* إخفاء الصفحات افتراضياً */
+        }
+
+        .content.active { display: block; }
+
+        /* الصفحة 1: الرئيسية */
+        .search-bar {
+            background: white;
+            border-radius: 25px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            box-shadow: var(--shadow);
+        }
+        .search-bar input { border: none; outline: none; width: 100%; margin-right: 10px; font-size: 16px; }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        .cat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .cat-card:active { transform: scale(0.95); }
+        .cat-card img { width: 40px; margin-bottom: 8px; }
+        .cat-card span { display: block; font-size: 14px; font-weight: bold; }
+
+        /* الصفحة 2: قائمة الفنيين */
+        .tech-card {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+        }
+        .tech-avatar { width: 60px; height: 60px; background: #eee; border-radius: 50%; margin-left: 15px; display: flex; align-items: center; justify-content: center; font-size: 30px; }
+        .tech-info { flex: 1; }
+        .tech-name { font-weight: bold; font-size: 18px; display: block; }
+        .tech-rating { color: #f1c40f; font-size: 13px; }
+        .tech-dist { color: #7f8c8d; font-size: 12px; display: block; margin-top: 4px; }
+        .select-btn { background: #3498db; color: white; border: none; padding: 8px 20px; border-radius: 10px; cursor: pointer; }
+
+        /* الصفحة 3: تأكيد الحجز */
+        .summary-box {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+        .summary-item { margin-bottom: 15px; }
+        .summary-label { color: #7f8c8d; font-size: 14px; display: block; }
+        .summary-value { font-weight: bold; font-size: 17px; }
+        
+        .payment-option {
+            border: 2px solid #eee;
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .payment-option.selected { border-color: var(--primary-blue); background: #ebf5fb; }
+        .total-price { text-align: center; font-size: 22px; color: #b7950b; margin: 20px 0; font-weight: bold; }
+        .confirm-btn { background: #2c3e50; color: white; width: 100%; padding: 15px; border: none; border-radius: 12px; font-size: 18px; cursor: pointer; }
+
+        /* الشريط السفلي */
+        nav {
+            height: 70px;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid #eee;
+        }
+        .nav-item { text-align: center; color: #95a5a6; cursor: pointer; font-size: 12px; flex: 1; }
+        .nav-item.active { color: var(--primary-blue); }
+        .nav-item i { display: block; font-size: 20px; margin-bottom: 4px; }
+    </style>
+</head>
+<body>
+
+<div class="phone-container">
+    <!-- الهيدر -->
+    <header id="main-header">
+        <span class="back-btn" onclick="showPage('home')">→</span>
+        <h2 class="header-title" id="page-title">Fix-It App</h2>
+    </header>
+
+    <!-- الصفحة 1: الرئيسية -->
+    <div id="home" class="content active">
+        <h3>مرحباً! ماذا تحتاج للإصلاح اليوم؟</h3>
+        <div class="search-bar">
+            <span>🔍</span>
+            <input type="text" placeholder="ابحث عن خدمة...">
+        </div>
+        <h4>التصنيفات:</h4>
+        <div class="categories-grid">
+            <div class="cat-card" onclick="showPage('technicians')" style="background:#aed6f1">🚰<span>سباكة</span></div>
+            <div class="cat-card" onclick="showPage('technicians')" style="background:#abebc6">🔌<span>كهرباء</span></div>
+            <div class="cat-card" onclick="showPage('technicians')" style="background:#d1f2eb">🧺<span>أجهزة</span></div>
+            <div class="cat-card" onclick="showPage('technicians')" style="background:#f9e79f">🖌️<span>دهان</span></div>
+            <div class="cat-card" onclick="showPage('technicians')" style="background:#f5cba7">🔨<span>نجارة</span></div>
+            <div class="cat-card" onclick="showPage('technicians')" style="background:#e5e8e8">🛠️<span>أخرى</span></div>
+        </div>
+    </div>
+
+    <!-- الصفحة 2: الفنيين -->
+    <div id="technicians" class="content">
+        <div class="tech-card">
+            <div class="tech-avatar">👨‍🔧</div>
+            <div class="tech-info">
+                <span class="tech-name">أحمد علي</span>
+                <span class="tech-rating">⭐ 4.8 (120 تقييم)</span>
+                <span class="tech-dist">📍 يبعد 2 كم</span>
+            </div>
+            <button class="select-btn" onclick="showPage('booking')">اختيار</button>
+        </div>
+        <div class="tech-card">
+            <div class="tech-avatar">👷‍♂️</div>
+            <div class="tech-info">
+                <span class="tech-name">محمد حسن</span>
+                <span class="tech-rating">⭐ 4.5 (85 تقييم)</span>
+                <span class="tech-dist">📍 يبعد 5 كم</span>
+            </div>
+            <button class="select-btn" onclick="showPage('booking')">اختيار</button>
+        </div>
+    </div>
+
+    <!-- الصفحة 3: التأكيد -->
+    <div id="booking" class="content">
+        <div class="summary-box">
+            <div class="summary-item">
+                <span class="summary-label">الخدمة</span>
+                <span class="summary-value">إصلاح أعطال كهرباء</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">الفني</span>
+                <span class="summary-value">أحمد علي 👷‍♂️</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">التاريخ والوقت</span>
+                <span class="summary-value">10 مايو 2026 | 02:00 مساءً</span>
+            </div>
+        </div>
+
+        <h4>وسيلة الدفع:</h4>
+        <div class="payment-option">💵 كاش (نقدي)</div>
+        <div class="payment-option selected">💳 بطاقة ائتمان / فودافون كاش</div>
+
+        <div class="total-price">الإجمالي: 150 EGP</div>
+        <button class="confirm-btn" onclick="confirmBooking()">تأكيد الحجز</button>
+    </div>
+
+    <!-- الشريط السفلي -->
+    <nav>
+        <div class="nav-item active" onclick="showPage('home')">🏠<br>الرئيسية</div>
+        <div class="nav-item">📅<br>الحجوزات</div>
+        <div class="nav-item">👤<br>الملف الشخصي</div>
+    </nav>
+</div>
+
+<script>
+    function showPage(pageId) {
+        // إخفاء كل الصفحات
+        document.querySelectorAll('.content').forEach(p => p.classList.remove('active'));
+        // إظهار الصفحة المطلوبة
+        document.getElementById(pageId).classList.add('active');
+
+        // تغيير العنوان العلوي وزر الرجوع
+        const title = document.getElementById('page-title');
+        const backBtn = document.querySelector('.back-btn');
+
+        if(pageId === 'home') {
+            title.innerText = 'Fix-It App';
+            backBtn.style.display = 'none';
+        } else if(pageId === 'technicians') {
+            title.innerText = 'الفنيين المتاحين';
+            backBtn.style.display = 'block';
+        } else {
+            title.innerText = 'تأكيد الحجز';
+            backBtn.style.display = 'block';
+        }
+    }
+
+    function confirmBooking() {
+        alert('تم تأكيد حجزك بنجاح! سيتم التواصل معك قريباً.');
+        showPage('home');
+    }
+
+    // تشغيل الصفحة الرئيسية عند البداية
+    showPage('home');
+</script>
+
+</body>
+</html>
